@@ -33,7 +33,9 @@ def create_global_matrix_references(reference_names, reference_values):
     globals.matrices = dictionary
 
 
-def lay_chain(matrix, chain, x, y, angle):
+def get_positions(matrix, chain, x, y, angle):
+    node_positions = []
+    segment_positions = []
     for i in range(len(chain["alphabet"])):
         letter = chain["alphabet"][i]
         if angle >= 180:
@@ -41,20 +43,28 @@ def lay_chain(matrix, chain, x, y, angle):
         print("x:", x, "y:", y, "letter:", letter, "angle:", angle)
 
         if i == 0:
-            globals.matrices[matrix][y][x][-1] += 1
+            node_positions.append([matrix, y, x])
 
         x += globals.directions[str(angle)][0]
         y += globals.directions[str(angle)][1]
 
-        globals.matrices[matrix][y][x][globals.directions[str(angle)][4]].append(letter)
+        segment_positions.append([matrix, y, x, globals.directions[str(angle)][4], letter])
 
         x += globals.directions[str(angle)][2]
         y += globals.directions[str(angle)][3]
 
         if i == len(chain["alphabet"]) - 1:
-            globals.matrices[matrix][y][x][-1] += 1
+            node_positions.append([matrix, y, x])
 
         if i < len(chain["alphabet"]) - 1:
             angle += chain["shape"][i]
         if angle >= 360:
             angle -= 360
+    return [segment_positions, node_positions]
+
+
+def lay_chain(positions):
+    for i in positions[0]:
+        globals.matrices[i[0]][i[1]][i[2]][i[3]].append(i[4])
+    for i in positions[1]:
+        globals.matrices[i[0]][i[1]][i[2]][-1] += 1
