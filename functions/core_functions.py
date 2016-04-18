@@ -63,6 +63,19 @@ def get_positions(matrix, chain, x, y, angle):
     return [segment_positions, node_positions]
 
 
+def check_positions(positions):
+    for i in positions[0]:
+        if i[2] < 0:  # chain crosses the left border
+            return False
+        elif i[2] >= len(globals.matrices[i[0]][0]):  # chain crosses the right border
+            return False
+        elif i[1] < 0:  # chain crosses the top border
+            return False
+        elif i[1] >= len(globals.matrices[i[0]]):  # chain crosses the bottom border
+            return False
+    return True
+
+
 def lay_chain(positions):
     for i in positions[0]:
         globals.matrices[i[0]][i[1]][i[2]][i[3]].append(i[4])
